@@ -1,0 +1,844 @@
+         <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nationalism in Europe - Interactive History</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid white;
+            color: white;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            font-weight: bold;
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .content-section {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: slideInUp 0.6s ease-out;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .timeline {
+            position: relative;
+            margin: 30px 0;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(to bottom, #667eea, #764ba2);
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin: 30px 0;
+            opacity: 0;
+            animation: fadeInTimeline 0.8s ease-out forwards;
+        }
+
+        .timeline-item:nth-child(odd) {
+            text-align: right;
+            padding-right: 55%;
+        }
+
+        .timeline-item:nth-child(even) {
+            text-align: left;
+            padding-left: 55%;
+        }
+
+        .timeline-content {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            position: relative;
+            border: 2px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .timeline-content:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .timeline-date {
+            font-weight: bold;
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .timeline-dot {
+            position: absolute;
+            left: 50%;
+            top: 20px;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            border: 4px solid white;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.5);
+        }
+
+        .concept-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            transition: transform 0.6s ease;
+            transform: scale(0);
+        }
+
+        .concept-card:hover::before {
+            transform: scale(1);
+        }
+
+        .concept-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .concept-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .concept-description {
+            position: relative;
+            z-index: 1;
+            line-height: 1.6;
+        }
+
+        .quiz-container {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border: 2px solid #667eea;
+        }
+
+        .quiz-question {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .quiz-options {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .quiz-option {
+            padding: 15px;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .quiz-option:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .quiz-option.correct {
+            background: #4CAF50;
+            color: white;
+            border-color: #4CAF50;
+        }
+
+        .quiz-option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        .audio-controls {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 10px;
+        }
+
+        .play-btn, .pause-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #667eea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .play-btn:hover, .pause-btn:hover {
+            background: #5a6fd8;
+            transform: scale(1.1);
+        }
+
+        .pause-btn {
+            background: #dc3545;
+        }
+
+        .pause-btn:hover {
+            background: #c82333;
+        }
+
+        .audio-text {
+            flex: 1;
+            font-style: italic;
+            color: #666;
+        }
+
+        .map-container {
+            position: relative;
+            background: #e8f4f8;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(45deg, #a8e6cf, #88d8c0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2em;
+            color: #2c5530;
+            font-weight: bold;
+        }
+
+        .animated-text {
+            opacity: 0;
+            animation: fadeInUp 1s ease-out forwards;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInTimeline {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a8e6cf 0%, #ffd3a5 100%);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2em; }
+            .timeline-item:nth-child(odd),
+            .timeline-item:nth-child(even) {
+                text-align: left;
+                padding-left: 10%;
+                padding-right: 10%;
+            }
+            .timeline::before { left: 5%; }
+            .timeline-dot { left: 5%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏛️ Nationalism in Europe</h1>
+            <p>Class 10 CBSE History - Chapter 1 Interactive Study Guide</p>
+        </div>
+
+        <div class="navigation">
+            <button class="nav-btn active" onclick="showSection('introduction')">Introduction</button>
+            <button class="nav-btn" onclick="showSection('timeline')">Timeline</button>
+            <button class="nav-btn" onclick="showSection('concepts')">Key Concepts</button>
+            <button class="nav-btn" onclick="showSection('unification')">Unification</button>
+            <button class="nav-btn" onclick="showSection('quiz')">Quiz</button>
+        </div>
+
+        <!-- Introduction Section -->
+        <div id="introduction" class="content-section active">
+            <h2 style="color: #667eea; margin-bottom: 20px;">🌍 The Birth of Modern Europe</h2>
+
+            <div class="audio-controls">
+                <button class="play-btn" onclick="speakText('introduction-text')">▶️</button>
+                <button class="pause-btn" onclick="pauseText()" style="display: none;">⏸️</button>
+                <div class="audio-text">Click to hear the introduction</div>
+            </div>
+
+            <div id="introduction-text" class="animated-text">
+                <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 20px;">
+                    The 19th century marked a revolutionary period in European history. The concept of the <span class="highlight">nation-state</span> emerged, fundamentally changing how people viewed their identity, loyalty, and political organization.
+                </p>
+
+                <p style="font-size: 1.1em; line-height: 1.8; margin-bottom: 20px;">
+                    Before this period, Europe was a patchwork of kingdoms, principalities, and empires. People identified primarily with their local communities or rulers. The idea that people sharing a common language, culture, and history should form their own political unit was revolutionary.
+                </p>
+
+                <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 5px solid #ffc107; margin: 20px 0;">
+                    <h3 style="color: #856404; margin-bottom: 10px;">💡 Key Question</h3>
+                    <p>What transforms a collection of people into a <strong>nation</strong>?</p>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <div class="map-placeholder">
+                    🗺️ Map of 19th Century Europe<br>
+                    <small>Interactive visualization of changing borders</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Timeline Section -->
+        <div id="timeline" class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 30px;">📅 Timeline of European Nationalism</h2>
+
+            <div class="audio-controls">
+                <button class="play-btn" onclick="speakText('timeline-content')">▶️</button>
+                <button class="pause-btn" onclick="pauseText()" style="display: none;">⏸️</button>
+                <div class="audio-text">Listen to the complete timeline</div>
+            </div>
+
+            <div id="timeline-content" class="timeline">
+                <div class="timeline-item" style="animation-delay: 0.2s;">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">1789-1799</div>
+                        <h3>French Revolution</h3>
+                        <p>The revolution introduced the concept of popular sovereignty and nationalism. The idea that power belongs to the people, not kings, spread across Europe.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item" style="animation-delay: 0.4s;">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">1804-1815</div>
+                        <h3>Napoleonic Era</h3>
+                        <p>Napoleon's conquests spread French revolutionary ideals across Europe, inadvertently awakening nationalist sentiments in conquered territories.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item" style="animation-delay: 0.6s;">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">1815</div>
+                        <h3>Congress of Vienna</h3>
+                        <p>European powers attempted to restore the old order, but nationalist ideas continued to grow underground.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item" style="animation-delay: 0.8s;">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">1848</div>
+                        <h3>Year of Revolutions</h3>
+                        <p>Liberal and nationalist uprisings swept across Europe, demanding constitutional governments and national unification.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item" style="animation-delay: 1s;">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">1871</div>
+                        <h3>German Unification</h3>
+                        <p>Otto von Bismarck successfully united German states under Prussian leadership, creating the German Empire.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Concepts Section -->
+        <div id="concepts" class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 30px;">🔑 Key Concepts & Definitions</h2>
+
+            <div class="audio-controls">
+                <button class="play-btn" onclick="speakText('concepts-content')">▶️</button>
+                <button class="pause-btn" onclick="pauseText()" style="display: none;">⏸️</button>
+                <div class="audio-text">Learn about key nationalist concepts</div>
+            </div>
+
+            <div id="concepts-content">
+                <div class="concept-card" onclick="toggleConcept(this)">
+                    <div class="concept-title">🏛️ Nation-State</div>
+                    <div class="concept-description">
+                        A political unit where the state and nation are congruent. It's based on the idea that people sharing common culture, language, and history should govern themselves.
+                        <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                            Example: France became one of the first true nation-states after the revolution.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card" onclick="toggleConcept(this)">
+                    <div class="concept-title">🔥 Nationalism</div>
+                    <div class="concept-description">
+                        A political ideology that emphasizes loyalty and devotion to one's nation, often including the belief that national interests should take precedence over regional or global concerns.
+                        <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                            Key elements: Common language, shared history, cultural traditions, and territorial boundaries.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card" onclick="toggleConcept(this)">
+                    <div class="concept-title">👑 Absolutism vs. Constitutionalism</div>
+                    <div class="concept-description">
+                        Absolutism: Rule by monarchs with unlimited power. Constitutionalism: Government limited by law and representative institutions.
+                        <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                            The nationalist movement often demanded constitutional governments and rights for citizens.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="concept-card" onclick="toggleConcept(this)">
+                    <div class="concept-title">🌟 Liberalism</div>
+                    <div class="concept-description">
+                        Political philosophy emphasizing individual rights, equality before law, and representative government. Often allied with nationalism in 19th century Europe.
+                        <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.8;">
+                            Liberals supported both national unification and constitutional government.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Unification Section -->
+        <div id="unification" class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 30px;">🇩🇪 German & Italian Unification</h2>
+
+            <div class="audio-controls">
+                <button class="play-btn" onclick="speakText('unification-content')">▶️</button>
+                <button class="pause-btn" onclick="pauseText()" style="display: none;">⏸️</button>
+                <div class="audio-text">Discover the unification stories</div>
+            </div>
+
+            <div id="unification-content">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin: 30px 0;">
+                    <div style="background: #f8f9ff; padding: 25px; border-radius: 15px; border: 2px solid #667eea;">
+                        <h3 style="color: #667eea; margin-bottom: 15px;">🇩🇪 German Unification</h3>
+                        <p><strong>Key Figure:</strong> Otto von Bismarck</p>
+                        <p><strong>Strategy:</strong> "Blood and Iron" - unification through war</p>
+                        <p><strong>Process:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Danish War (1864)</li>
+                            <li>Austro-Prussian War (1866)</li>
+                            <li>Franco-Prussian War (1870-71)</li>
+                        </ul>
+                        <p><strong>Result:</strong> German Empire established in 1871</p>
+                    </div>
+
+                    <div style="background: #f0fff0; padding: 25px; border-radius: 15px; border: 2px solid #28a745;">
+                        <h3 style="color: #28a745; margin-bottom: 15px;">🇮🇹 Italian Unification</h3>
+                        <p><strong>Key Figures:</strong> Giuseppe Mazzini, Camillo Cavour, Giuseppe Garibaldi</p>
+                        <p><strong>Strategy:</strong> Combination of diplomacy and popular uprising</p>
+                        <p><strong>Process:</strong></p>
+                        <ul style="margin: 10px 0; padding-left: 20px;">
+                            <li>Young Italy movement</li>
+                            <li>Sardinia-Piedmont leadership</li>
+                            <li>Garibaldi's "Thousand" expedition</li>
+                        </ul>
+                        <p><strong>Result:</strong> Kingdom of Italy formed in 1861</p>
+                    </div>
+                </div>
+
+                <div style="background: #fff3cd; padding: 20px; border-radius: 10px; border-left: 5px solid #ffc107; margin: 20px 0;">
+                    <h3 style="color: #856404; margin-bottom: 10px;">🤔 Think About It</h3>
+                    <p>How did the methods of German and Italian unification differ? What does this tell us about different approaches to building nations?</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz Section -->
+        <div id="quiz" class="content-section">
+            <h2 style="color: #667eea; margin-bottom: 30px;">🧠 Test Your Knowledge</h2>
+
+            <div class="quiz-container">
+                <div class="quiz-question">1. What event is considered the starting point of modern European nationalism?</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">The Congress of Vienna (1815)</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, true)">The French Revolution (1789)</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">The Napoleonic Wars</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">The Year of Revolutions (1848)</div>
+                </div>
+                <div id="answer1" style="margin-top: 10px; font-weight: bold; display: none;"></div>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-question">2. Who was known as the "Iron Chancellor" of German unification?</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">Kaiser Wilhelm I</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, true)">Otto von Bismarck</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">Giuseppe Garibaldi</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">Napoleon III</div>
+                </div>
+                <div id="answer2" style="margin-top: 10px; font-weight: bold; display: none;"></div>
+            </div>
+
+            <div class="quiz-container">
+                <div class="quiz-question">3. What was the main goal of the Congress of Vienna?</div>
+                <div class="quiz-options">
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">To promote nationalism</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, true)">To restore the old European order</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">To create new nation-states</div>
+                    <div class="quiz-option" onclick="selectAnswer(this, false)">To spread democracy</div>
+                </div>
+                <div id="answer3" style="margin-top: 10px; font-weight: bold; display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuiz = 0;
+
+        function showSection(sectionId) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Remove active class from all nav buttons
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach(btn => btn.classList.remove('active'));
+
+            // Show selected section
+            document.getElementById(sectionId).classList.add('active');
+
+            // Add active class to clicked nav button
+            event.target.classList.add('active');
+
+            // Trigger animations for timeline items
+            if (sectionId === 'timeline') {
+                const timelineItems = document.querySelectorAll('.timeline-item');
+                timelineItems.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.style.opacity = '1';
+                    }, index * 200);
+                });
+            }
+        }
+
+        let currentUtterance = null;
+        let isPaused = false;
+
+        function speakText(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.innerText || element.textContent;
+
+            if ('speechSynthesis' in window) {
+                // Cancel any ongoing speech
+                speechSynthesis.cancel();
+                isPaused = false;
+
+                // Wait for voices to load if not already loaded
+                const loadVoices = () => {
+                    const voices = speechSynthesis.getVoices();
+
+                    currentUtterance = new SpeechSynthesisUtterance(text);
+                    currentUtterance.rate = 0.9;
+                    currentUtterance.pitch = 1.3;
+                    currentUtterance.volume = 0.9;
+
+                    // Enhanced female voice selection
+                    const femaleVoice = voices.find(voice => {
+                        const name = voice.name.toLowerCase();
+                        const lang = voice.lang.toLowerCase();
+
+                        // Check for explicitly female voices
+                        if (name.includes('female') || name.includes('woman')) return true;
+
+                        // Common energetic female voice names across platforms
+                        const femaleNames = [
+                            'zira', 'cortana', 'hazel', 'samantha', 'susan', 'karen', 'victoria',
+                            'veena', 'rishi', 'kathy', 'serena', 'aria', 'siri', 'alexa',
+                            'google uk english female', 'google us english female',
+                            'microsoft zira', 'microsoft hazel', 'apple samantha',
+                            'english (india)', 'hindi', 'bangla', 'natural', 'neural',
+                            'wavenet', 'journey', 'studio'
+                        ];
+
+                        // Check if voice name matches female names
+                        if (femaleNames.some(femaleName => name.includes(femaleName))) return true;
+
+                        // For Indian users - check for Indian English female voices
+                        if (lang.includes('en-in') && (name.includes('female') || name.includes('raveena'))) return true;
+
+                        return false;
+                    }) || voices.find(voice => {
+                        // Fallback: Look for high-quality, energetic English voices
+                        const name = voice.name.toLowerCase();
+                        const lang = voice.lang.toLowerCase();
+                        return lang.includes('en') &&
+                               (name.includes('google') || name.includes('natural') ||
+                                name.includes('neural') || name.includes('wavenet') ||
+                                name.includes('journey') || name.includes('studio'));
+                    }) || voices.find(voice => {
+                        // Final fallback: Any English voice with good quality indicators
+                        const name = voice.name.toLowerCase();
+                        const lang = voice.lang.toLowerCase();
+                        return lang.includes('en') && !name.includes('eSpeak');
+                    });
+
+                    if (femaleVoice) {
+                        currentUtterance.voice = femaleVoice;
+                        console.log('Selected voice:', femaleVoice.name);
+                    }
+
+                    // Show/hide buttons
+                    const playButtons = document.querySelectorAll('.play-btn');
+                    const pauseButtons = document.querySelectorAll('.pause-btn');
+
+                    playButtons.forEach(btn => btn.style.display = 'none');
+                    pauseButtons.forEach(btn => btn.style.display = 'inline-block');
+
+                    currentUtterance.onend = function() {
+                        playButtons.forEach(btn => btn.style.display = 'inline-block');
+                        pauseButtons.forEach(btn => btn.style.display = 'none');
+                        currentUtterance = null;
+                    };
+
+                    currentUtterance.onerror = function() {
+                        playButtons.forEach(btn => btn.style.display = 'inline-block');
+                        pauseButtons.forEach(btn => btn.style.display = 'none');
+                        currentUtterance = null;
+                    };
+
+                    speechSynthesis.speak(currentUtterance);
+                };
+
+                // Load voices if not already loaded
+                if (speechSynthesis.getVoices().length === 0) {
+                    speechSynthesis.onvoiceschanged = loadVoices;
+                } else {
+                    loadVoices();
+                }
+
+            } else {
+                alert('Text-to-speech is not supported in your browser. Try using Chrome, Firefox, or Safari.');
+            }
+        }
+
+        function pauseText() {
+            if (speechSynthesis.speaking && !isPaused) {
+                speechSynthesis.pause();
+                isPaused = true;
+
+                // Change button text
+                const pauseButtons = document.querySelectorAll('.pause-btn');
+                pauseButtons.forEach(btn => {
+                    btn.innerHTML = '▶️';
+                    btn.onclick = resumeText;
+                });
+            }
+        }
+
+        function resumeText() {
+            if (speechSynthesis.paused && isPaused) {
+                speechSynthesis.resume();
+                isPaused = false;
+
+                // Change button text back
+                const pauseButtons = document.querySelectorAll('.pause-btn');
+                pauseButtons.forEach(btn => {
+                    btn.innerHTML = '⏸️';
+                    btn.onclick = pauseText;
+                });
+            }
+        }
+
+        function stopText() {
+            speechSynthesis.cancel();
+            isPaused = false;
+            currentUtterance = null;
+
+            // Reset buttons
+            const playButtons = document.querySelectorAll('.play-btn');
+            const pauseButtons = document.querySelectorAll('.pause-btn');
+
+            playButtons.forEach(btn => btn.style.display = 'inline-block');
+            pauseButtons.forEach(btn => btn.style.display = 'none');
+        }
+
+        function selectAnswer(element, isCorrect) {
+            // Remove previous selections
+            const siblings = element.parentNode.children;
+            for (let sibling of siblings) {
+                sibling.classList.remove('correct', 'incorrect');
+            }
+
+            // Add appropriate class
+            if (isCorrect) {
+                element.classList.add('correct');
+                showFeedback(element, '✅ Correct! Well done!', 'green');
+            } else {
+                element.classList.add('incorrect');
+                showFeedback(element, '❌ Incorrect. Try again!', 'red');
+
+                // Show correct answer after a delay
+                setTimeout(() => {
+                    for (let sibling of siblings) {
+                        if (sibling.onclick.toString().includes('true')) {
+                            sibling.classList.add('correct');
+                        }
+                    }
+                }, 1000);
+            }
+        }
+
+        function showFeedback(element, message, color) {
+            const feedback = document.createElement('div');
+            feedback.textContent = message;
+            feedback.style.color = color;
+            feedback.style.fontWeight = 'bold';
+            feedback.style.marginTop = '10px';
+
+            // Remove any existing feedback
+            const existingFeedback = element.parentNode.parentNode.querySelector('.feedback');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+
+            feedback.classList.add('feedback');
+            element.parentNode.parentNode.appendChild(feedback);
+        }
+
+        function toggleConcept(element) {
+            element.style.transform = element.style.transform === 'scale(1.05)' ? 'scale(1)' : 'scale(1.05)';
+        }
+
+        // Initialize animations on page load
+        window.addEventListener('load', function() {
+            const animatedElements = document.querySelectorAll('.animated-text');
+            animatedElements.forEach((element, index) => {
+                setTimeout(() => {
+                    element.style.opacity = '1';
+                }, index * 300);
+            });
+        });
+
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add hover effects to concept cards
+            const conceptCards = document.querySelectorAll('.concept-card');
+            conceptCards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px) scale(1.02)';
+                });
+
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0) scale(1)';
+                });
+            });
+        });
+    </script>
+</body>
+</html>
